@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/mvc"
+			 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+			 xmlns:beans="http://www.springframework.org/schema/beans"
+			 xmlns:context="http://www.springframework.org/schema/context"
+			 xmlns:mybatis-spring="http://mybatis.org/schema/mybatis-spring"
+			 xsi:schemaLocation="http://www.springframework.org/schema/mvc
+			 		 http://www.springframework.org/schema/mvc/spring-mvc.xsd
+			 		 http://www.springframework.org/schema/beans
+			 		 http://www.springframework.org/schema/beans/spring-beans.xsd
+			 		 http://www.springframework.org/schema/context
+			 		 http://www.springframework.org/schema/context/spring-context.xsd
+			 		 http://mybatis.org/schema/mybatis-spring http://mybatis.org/schema/mybatis-spring-1.2.xsd">
+			 					 
+	<!-- 스캔한 패지키 내부의 클래스 중 Controller 어노테이션을 가지고 있는 클래스들을 Controller로 로딩하도록 한다 -->
+	<annotation-driven/>
+	
+	<!-- 스캔할 bean들이 모여있는 패키지를 지정한다. -->
+	<context:component-scan base-package="kr.co.test"/>
+	<mybatis-spring:scan base-package="kr.co.test.mapper"/>
+	
+	<!-- Controller의 메서드에서 반환하는 문자열 앞 뒤에 붙힐 경로 정보를 셋팅한다. -->
+	<beans:bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<beans:property name="prefix" value="/WEB-INF/views/"/>
+		<beans:property name="suffix" value=".jsp"/>
+	</beans:bean>
+	
+	<!-- 정적파일(이미지, 사운드, 동영상, JS, CSS 등등) 경로 셋팅 -->
+	<resources mapping="/**" location="/resources/"/>
+	
+	
+	<!-- messageSource 등록 -->
+	<beans:bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<beans:property name="locations">
+			<beans:list>
+				<beans:value>/WEB-INF/properties/db.properties</beans:value>
+			</beans:list>
+		</beans:property>
+	</beans:bean>
+	
+	
+	<!-- DB 연동 -->
+	<beans:bean id="basic_dataSource" class="org.apache.commons.dbcp2.BasicDataSource">
+		<beans:property name="driverClassName" value="${db.classname}"></beans:property>
+		<beans:property name="url" value="${db.url}"></beans:property>
+		<beans:property name="username" value="${db.username}"></beans:property>
+		<beans:property name="password" value="${db.password}"></beans:property>
+			
+	</beans:bean>
+		
+	<!-- SqlSessionFactory Bean -->
+	<beans:bean id="sqlSession" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<beans:property name="dataSource" ref="basic_dataSource"></beans:property>
+		<beans:property name="mapperLocations" value="/WEB-INF/mapper/*.xml"></beans:property>
+	</beans:bean>
+	
+	<!-- SqlSessionTemplate -->
+	<beans:bean class="org.mybatis.spring.SqlSessionTemplate" id="sqlSessionTemplate">
+		<beans:constructor-arg index="0" ref="sqlSession"></beans:constructor-arg>	
+	</beans:bean>		
+		
+</beans:beans>
+
+
+
+
+
+
+
+
+
+
+
+
+
