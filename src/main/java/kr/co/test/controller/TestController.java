@@ -3,11 +3,16 @@ package kr.co.test.controller;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import javax.validation.Valid;
+
 import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.PropertySources;
 import org.springframework.stereotype.Controller;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -17,6 +22,9 @@ import kr.co.test.vo.SubjectVO;
 
 @Controller
 @Service
+@PropertySources({
+	@PropertySource("/WEB-INF/properties/error.properties")
+})
 public class TestController {
 	@Autowired
 	private MapperInterface mapperInterface;
@@ -46,7 +54,26 @@ public class TestController {
 	}
 	
 	@RequestMapping("/subjectInsertPro")
-	public String subjectInsertPro(SubjectVO subjectVO) {
+	public String subjectInsertPro(SubjectVO subjectVO, BindingResult result, Model model) {
+		ArrayList<String> arr = null;
+		if(result.hasErrors()) {
+			arr = new ArrayList<String>();
+			for(int i=0; i<result.getAllErrors().size(); i++) {
+				if(result.getFieldErrors().get(i).getField().equals("credit")) {
+					arr.add("학점은 숫자만 입력 가능합니다.");
+				}
+				else if(result.getFieldErrors().get(i).getField().equals("endHour")) {
+					arr.add("종료 시간은 숫자만 입력해주세요");
+				}
+				else if(result.getFieldErrors().get(i).getField().equals("startHour")) {
+					arr.add("시작 시간은 숫자만 입력해주세요");
+				}
+			}
+			model.addAttribute("arr", arr);
+			
+			return "forward:subjectAdd";
+		}
+		
 		mapperInterface.insertSubject(subjectVO);
 		
 		return "redirect:subjectList";

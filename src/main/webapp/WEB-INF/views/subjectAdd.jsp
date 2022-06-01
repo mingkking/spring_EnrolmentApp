@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -24,7 +25,11 @@
 				<th>과목명</th><td><input type="text" name="name" maxlength="13" required style="width: 95%;"></td>
 			</tr>
 			<tr>
-				<th>학점</th><td><input type="text" name="credit" maxlength="1" placeholder="1~5" required style="width: 95%;"></td>
+				<th>학점</th>
+				<td>
+					<input type="text" name="credit" maxlength="1" placeholder="1~5" required style="width: 95%;">
+				</td>
+				
 			</tr>
 			<tr>
 				<th>담당 강사</th>
@@ -58,6 +63,15 @@
 			<tr>
 				<td colspan="2" align="center"><input type="submit" value="과목추가"></td>
 			</tr>
+			<c:if test="${arr != null }">
+				<tr>
+					<td colspan="2">
+						<c:forEach var="i" begin="0" end="${arr.size()-1 }">
+							${arr.get(i) }<br>
+						</c:forEach>
+					</td>
+				</tr>
+			</c:if>
 		</table>
 	</form>
 <c:import url="/WEB-INF/views/bottom.jsp"></c:import>
